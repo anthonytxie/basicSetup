@@ -1,5 +1,7 @@
 const passport = require("passport");
 const googleStrategy = require("passport-google-oauth20").Strategy;
+const facebookStrategy = require("passport-facebook").Strategy;
+
 const userDAO = require("./../../db/DAO/userDAO");
 
 // we are serializing the user based on the userID created by mongo then this gets set as the cookie
@@ -15,6 +17,7 @@ passport.deserializeUser((id, done) => {
 });
 
 //passport makes req.user automatically the user object
+// ===============================GOOGLE=============================================
 
 passport.use(
 	new googleStrategy(
@@ -26,6 +29,25 @@ passport.use(
 		(accessToken, refreshToken, profile, done) => {
 			userDAO
 				.initializeGoogleUser(profile.id)
+				.then(user => {
+					done(null, user); //after this user serialization happens
+				})
+				.catch(err => console.log(err));
+		}
+	)
+);
+
+// ===============================FACEBOOK=============================================
+passport.use(
+	new facebookStrategy(
+		{
+			clientID: process.env.facebookAppId,
+			clientSecret: process.env.facebookAppSecret,
+			callbackURL: "/auth/facebook/callback"
+		},
+		function(accessToken, refreshToken, profile, done) {
+			userDAO
+				.initializeFacebookUser(profile.id)
 				.then(user => {
 					done(null, user); //after this user serialization happens
 				})

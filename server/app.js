@@ -8,11 +8,15 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const winston = require("winston");
 const serializeError = require("serialize-error");
+const flash = require("connect-flash");
 
 const app = express();
 
-
 //Middleware
+app.use(bodyParser.json()); // get information from html forms
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.set("view engine", "ejs"); // set up ejs for templating
 
 app.use(
 	cookieSession({
@@ -22,9 +26,6 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(bodyParser.json());
 app.use(authRoutes);
-
-
 
 module.exports = app;
