@@ -41,11 +41,25 @@ routes.get(
 
 // ===============================LOCAL=============================================
 
+routes.get("/signup", (req, res) => {
+	res.render("signup.ejs");
+});
+
+routes.post(
+	"/signup",
+	passport.authenticate("local-signup", {
+		failureRedirect: "/",
+		successRedirect: "/currentuser"
+	})
+);
+
 routes.get("/currentuser", (req, res) => {
 	res.send(req.user);
 });
 
 routes.get("/logout", (req, res) => {
+	console.log('logging out')
 	req.logout();
+	res.redirect('/')
 });
 module.exports = routes;
